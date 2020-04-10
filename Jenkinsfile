@@ -40,7 +40,7 @@ pipeline {
             steps {
                 input 'Deploy to Production?'
                 milestone(1)
-                sshagent(credentialsId: ['ssh_prometheus_node']) {
+                sshagent(credentials: ['ssh_prometheus_node']) {
                     script {
                         sh "ssh -o StrictHostKeyChecking=no ubuntu@$prod_ip \"docker pull 192.168.0.112:8082/nexus-docker-repo/website/d20200410/train:latest\""
                         try {
