@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+        DOCKER_IMAGE_NAME = "192.168.0.112:8082/nexus-docker-repo/website/d20200410/train"
+    }
     stages {
         stage('Build') {
             steps {
@@ -14,7 +17,7 @@ pipeline {
             }
             steps {
                 script {
-                    app = docker.build("192.168.0.112:8082/nexus-docker-repo/website/d20200410/train:$BUILD_NUMBER")
+                    app = docker.build("$DOCKER_IMAGE_NAME:$BUILD_NUMBER")
                     app.inside {
                         sh 'hostname'
                     }
@@ -40,17 +43,11 @@ pipeline {
             steps {
                 input 'Deploy to Production?'
                 milestone(1)
-                sshagent(credentials: ['ssh_prometheus_node']) {
-                    script {
-                        sh "ssh -o StrictHostKeyChecking=no ubuntu@$prod_ip \"docker pull 192.168.0.112:8082/nexus-docker-repo/website/d20200410/train:$BUILD_NUMBER\""
-                        try {
-                            sh "ssh -o StrictHostKeyChecking=no ubuntu@$prod_ip \"docker stop train-schedule\""
-                            sh "ssh -o StrictHostKeyChecking=no ubuntu@$prod_ip \"docker rm train-schedule\""
-                        } catch (err) {
-                            echo: 'caught error: $err'
-                        }
-                        sh "ssh -o StrictHostKeyChecking=no ubuntu@$prod_ip \"docker run --restart always --name train-schedule -p 8090:8080 -d 192.168.0.112:8082/nexus-docker-repo/website/d20200410/train:$BUILD_NUMBER\""
-                    }
+                kubernetesDeploy(
+                    kubeconfigId: 'kubeconfig',
+                    configs: 'train-schedule-kube.yaml',
+                    enableConfigSubstitution: true
+                    
                 }
             }
         }
