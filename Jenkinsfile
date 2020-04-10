@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE_NAME = "192.168.0.112:8082/nexus-docker-repo/website/d20200410/train"
+        DOCKER_IMAGE_NAME = "192.168.0.106:32002/nexus-docker-repo/website/d20200410/train"
     }
     stages {
         stage('Build') {
@@ -30,7 +30,7 @@ pipeline {
             }
             steps {
                 script {
-                    docker.withRegistry('http://192.168.0.112:8082', 'nexus_docker') {
+                    docker.withRegistry('http://192.168.0.106:32002', 'nexus_docker') {
                         app.push()
                     }
                 }
