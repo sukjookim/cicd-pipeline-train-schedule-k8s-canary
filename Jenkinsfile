@@ -40,12 +40,12 @@ pipeline {
             steps {
                 input 'Deploy to Production?'
                 milestone(1)
-                withCredentials([usernamePassword(credentialsId: 'ssh_prometheus_node', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
+                withCredentials([string(credentialsId: 'ssh_prometheus_node')]) {
                     script {
-                        sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no ubuntu@$prod_ip \"docker pull 192.168.0.112:8082/nexus-docker-repo/website/d20200410/train:latest\""
+                        sh "ssh -o StrictHostKeyChecking=no ubuntu@$prod_ip \"docker pull 192.168.0.112:8082/nexus-docker-repo/website/d20200410/train:latest\""
                         try {
-                            sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no ubuntu@$prod_ip \"docker stop train-schedule\""
-                            sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no ubuntu@$prod_ip \"docker rm train-schedule\""
+                            sh "ssh -o StrictHostKeyChecking=no ubuntu@$prod_ip \"docker stop train-schedule\""
+                            sh "ssh -o StrictHostKeyChecking=no ubuntu@$prod_ip \"docker rm train-schedule\""
                         } catch (err) {
                             echo: 'caught error: $err'
                         }
