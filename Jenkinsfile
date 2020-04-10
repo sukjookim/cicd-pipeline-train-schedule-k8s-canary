@@ -28,8 +28,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('http://192.168.0.112:8082', 'nexus_docker') {
-                        app.push("192.168.0.112:8082/nexus-docker-repo/website/d20200410/train:${env.BUILD_NUMBER}")
-                        app.push("192.168.0.112:8082/nexus-docker-repo/website/d20200410/train:latest")
+                        app.push("nexus-docker-repo/website/d20200410/train:${env.BUILD_NUMBER}")
+                        app.push("nexus-docker-repo/website/d20200410/train:latest")
                     }
                 }
             }
