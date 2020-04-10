@@ -27,7 +27,7 @@ pipeline {
             }
             steps {
                 script {
-                    docker.withRegistry('192.168.0.112:8082', 'nexus_docker') {
+                    docker.withRegistry('http://192.168.0.112:8082', 'nexus_docker') {
                         app.push("${env.BUILD_NUMBER}")
                         app.push("latest")
                     }
