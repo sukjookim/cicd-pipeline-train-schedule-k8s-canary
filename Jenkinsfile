@@ -14,7 +14,7 @@ pipeline {
             }
             steps {
                 script {
-                    app = docker.build("192.168.0.112:8082/nexus-docker-repo/website/d20200410/train")
+                    app = docker.build("192.168.0.112:8082/nexus-docker-repo/website/d20200410/train:$(git rev-parse HEAD | cut -c1-5)")
                     app.inside {
                         sh 'hostname'
                     }
