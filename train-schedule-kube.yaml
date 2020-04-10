@@ -28,6 +28,8 @@ spec:
       labels:
         app: train-schedule
     spec:
+      imagePullSecrets:
+      - name: regcred
       containers:
       - name: train-schedule
         image: $DOCKER_IMAGE_NAME:$BUILD_NUMBER
