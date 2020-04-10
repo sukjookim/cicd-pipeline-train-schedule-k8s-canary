@@ -16,7 +16,7 @@ pipeline {
                 script {
                     app = docker.build("192.168.0.112:8082/nexus-docker-repo/website/d20200410/train")
                     app.inside {
-                        sh 'echo $(curl localhost:8080)'
+                        sh 'hostname'
                     }
                 }
             }
@@ -28,8 +28,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('http://192.168.0.112:8082', 'nexus_docker') {
-                        app.push("nexus-docker-repo/website/d20200410/train:${env.BUILD_NUMBER}")
-                        app.push("nexus-docker-repo/website/d20200410/train:latest")
+                        app.push()
                     }
                 }
             }
@@ -43,14 +42,14 @@ pipeline {
                 milestone(1)
                 withCredentials([usernamePassword(credentialsId: 'ssh_prometheus_node', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
                     script {
-                        sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no ubuntu@$prod_ip \"docker pull 192.168.0.112:8082/nexus-docker-repo/website/d20200410/train:${env.BUILD_NUMBER}\""
+                        sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no ubuntu@$prod_ip \"docker pull 192.168.0.112:8082/nexus-docker-repo/website/d20200410/train:latest\""
                         try {
                             sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no ubuntu@$prod_ip \"docker stop train-schedule\""
                             sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no ubuntu@$prod_ip \"docker rm train-schedule\""
                         } catch (err) {
                             echo: 'caught error: $err'
                         }
-                        sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker run --restart always --name train-schedule -p 8090:8080 -d 192.168.0.112:8082/nexus-docker-repo/website/d20200410/train:${env.BUILD_NUMBER}\""
+                        sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker run --restart always --name train-schedule -p 8090:8080 -d 192.168.0.112:8082/nexus-docker-repo/website/d20200410/train:latest\""
                     }
                 }
             }
