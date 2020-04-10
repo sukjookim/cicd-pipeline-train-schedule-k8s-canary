@@ -48,7 +48,7 @@ pipeline {
                     configs: 'train-schedule-kube.yaml',
                     enableConfigSubstitution: true
                     
-                }
+                )
             }
         }
     }
